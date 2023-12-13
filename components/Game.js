@@ -2,31 +2,38 @@ import { Board } from './Board.js';
 import { Player } from './Player.js';
 
 export class Game {
+    #boardElement;
+    #startNewGameButton;
+    #startingSelect;
+    #depthSelect;
+    #startingPlayer;
+    #depth;
+
     constructor() {
-        this.boardElement = document.getElementById('board');
-        this.startNewGameButton = document.getElementById('newGameButton');
-        this.startingSelect = document.getElementById('starting');
-        this.depthSelect = document.getElementById('depth');
+        this.#boardElement = document.getElementById('board');
+        this.#startNewGameButton = document.getElementById('newGameButton');
+        this.#startingSelect = document.getElementById('starting');
+        this.#depthSelect = document.getElementById('depth');
 
-        this.startingPlayer = -1;
-        this.depth = 1;
+        this.#startingPlayer = -1;
+        this.#depth = 1;
 
-        this.startingSelect.addEventListener('change', ({ target }) => {
-            this.startingPlayer = parseInt(target.value, 10);
+        this.#startingSelect.addEventListener('change', ({ target }) => {
+            this.#startingPlayer = parseInt(target.value, 10);
         });
 
-        this.depthSelect.addEventListener('change', ({ target }) => {
-            this.depth = parseInt(target.value, 10);
+        this.#depthSelect.addEventListener('change', ({ target }) => {
+            this.#depth = parseInt(target.value, 10);
         });
 
-        this.startNewGameButton.addEventListener('click', () => {
-            this.newGame(this.depth, this.startingPlayer);
+        this.#startNewGameButton.addEventListener('click', () => {
+            this.newGame(this.#depth, this.#startingPlayer);
         });
     }
 
-    renderNewBoard() {
-        this.boardElement.className = '';
-        this.boardElement.innerHTML = `<div class="cells-wrap">
+    #renderNewBoard() {
+        this.#boardElement.className = '';
+        this.#boardElement.innerHTML = `<div class="cells-wrap">
             <button class="cell-0"></button>
             <button class="cell-1"></button>
             <button class="cell-2"></button>
@@ -39,7 +46,7 @@ export class Game {
         </div>`;
     }
 
-    drawWinningLine(statusObject) {
+    #drawWinningLine(statusObject) {
         if (!statusObject) {
             return;
         }
@@ -56,16 +63,16 @@ export class Game {
 
     newGame() {
         //Instantiating a new player and an empty board
-        const player = new Player(parseInt(this.depth));
+        const player = new Player(parseInt(this.#depth));
         const board = new Board();
 
         //Clearing all #Board classes and populating cells HTML
-        this.renderNewBoard();
+        this.#renderNewBoard();
 
         //Storing HTML cells in an array
-        const htmlCells = [...this.boardElement.querySelector('.cells-wrap').children];
+        const htmlCells = [...this.#boardElement.querySelector('.cells-wrap').children];
         //Initializing some variables for internal use
-        const starting = this.startingPlayer;
+        const starting = this.#startingPlayer;
         const maximizing = starting;
         let playerTurn = starting;
         //If computer is going to start, choose a random cell as long as it is the center or a corner
@@ -95,7 +102,7 @@ export class Game {
                 htmlCells[index].classList.add(symbol);
                 //If it's a terminal move, and it's not a draw, then human won
                 if (board.isFinished()) {
-                    this.drawWinningLine(board.isFinished());
+                    this.#drawWinningLine(board.isFinished());
                 }
                 playerTurn = 0; //Switch turns
                 //Get computer's best move and update the UI
@@ -104,7 +111,7 @@ export class Game {
                     board.insert(symbol, parseInt(best));
                     htmlCells[best].classList.add(symbol);
                     if (board.isFinished()) {
-                        this.drawWinningLine(board.isFinished());
+                        this.#drawWinningLine(board.isFinished());
                     }
                     playerTurn = 1; //Switch turns
                 });

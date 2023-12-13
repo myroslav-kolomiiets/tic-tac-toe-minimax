@@ -1,21 +1,24 @@
 import { Board } from './Board.js';
 
 export class Player {
+    #maxDepth;
+    #nodesMap;
+
     constructor(maxDepth = -1) {
-        this.maxDepth = maxDepth;
-        this.nodesMap = new Map();
+        this.#maxDepth = maxDepth;
+        this.#nodesMap = new Map();
     }
 
     //If it's the main call, return the index of the best move or a random index if multiple indices have the same value
-    getIndex(best, depth, callback) {
+    #getIndex(best, depth, callback) {
         if (depth === 0) {
             let returnValue;
-            if (typeof this.nodesMap.get(best) == 'string') {
-                const arr = this.nodesMap.get(best).split(',');
+            if (typeof this.#nodesMap.get(best) == 'string') {
+                const arr = this.#nodesMap.get(best).split(',');
                 const rand = Math.floor(Math.random() * arr.length);
                 returnValue = arr[rand];
             } else {
-                returnValue = this.nodesMap.get(best);
+                returnValue = this.#nodesMap.get(best);
             }
             //run a callback after calculation and return the index
             callback(returnValue);
@@ -26,10 +29,10 @@ export class Player {
     getBestMove(board, maximizing = true, callback = () => {
     }, depth = 0) {
         //clear nodesMap if the function is called for a new move
-        if (depth === 0) this.nodesMap.clear();
+        if (depth === 0) this.#nodesMap.clear();
 
         //If the board state is a terminal one, return the heuristic value
-        if (board.isFinished() || depth === this.maxDepth) {
+        if (board.isFinished() || depth === this.#maxDepth) {
             if (board.isFinished().winner === 'x') {
                 return 100 - depth;
             } else if (board.isFinished().winner === 'o') {
@@ -54,15 +57,15 @@ export class Player {
                 //If it's the main function call, not a recursive one, map each heuristic value with it's moves indices
                 if (depth === 0) {
                     //Comma separated indices if multiple moves have the same heuristic value
-                    const moves = this.nodesMap.has(nodeValue)
-                        ? `${this.nodesMap.get(nodeValue)},${index}`
+                    const moves = this.#nodesMap.has(nodeValue)
+                        ? `${this.#nodesMap.get(nodeValue)},${index}`
                         : index;
-                    this.nodesMap.set(nodeValue, moves);
+                    this.#nodesMap.set(nodeValue, moves);
                 }
             });
 
             //If it's the main call, return the index of the best move or a random index if multiple indices have the same value
-            this.getIndex(best, depth, callback);
+            this.#getIndex(best, depth, callback);
             //If not main call (recursive) return the heuristic value for next calculation
             return best;
         }
@@ -86,14 +89,14 @@ export class Player {
                 //If it's the main function call, not a recursive one, map each heuristic value with it's moves indices
                 if (depth === 0) {
                     //Comma separated indices if multiple moves have the same heuristic value
-                    const moves = this.nodesMap.has(nodeValue)
-                        ? this.nodesMap.get(nodeValue) + ',' + index
+                    const moves = this.#nodesMap.has(nodeValue)
+                        ? this.#nodesMap.get(nodeValue) + ',' + index
                         : index;
-                    this.nodesMap.set(nodeValue, moves);
+                    this.#nodesMap.set(nodeValue, moves);
                 }
             });
             //If it's the main call, return the index of the best move or a random index if multiple indices have the same value
-            this.getIndex(best, depth, callback);
+            this.#getIndex(best, depth, callback);
             //If not main call (recursive) return the heuristic value for next calculation
             return best;
         }

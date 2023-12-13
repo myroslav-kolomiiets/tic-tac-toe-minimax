@@ -3,13 +3,13 @@ export class Board {
         this.state = ['', '', '', '', '', '', '', '', ''];
     }
 
-    isEmpty() {
+    #isEmpty() {
         return this.state.every(function(cell) {
             return cell === '';
         });
     }
 
-    isFull() {
+    #isFull() {
         return this.state.every(function(cell) {
             return cell !== '';
         });
@@ -17,7 +17,7 @@ export class Board {
 
     isFinished() {
         //Return False if board in empty
-        if (this.isEmpty()) {
+        if (this.#isEmpty()) {
             return false;
         }
 
@@ -52,7 +52,7 @@ export class Board {
         }
 
         //If no winner but the board is full, then it's a draw
-        if (this.isFull()) {
+        if (this.#isFull()) {
             return { 'winner': 'draw' };
         }
 
